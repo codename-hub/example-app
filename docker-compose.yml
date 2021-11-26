@@ -1,0 +1,51 @@
+version: '3'
+services:
+
+  #
+  # an apache+php powered webserver service
+  #
+  app:
+    build:
+      context: ./docker
+      dockerfile: app
+      args:
+        debug: 1
+    environment:
+      - CORE_ENVIRONMENT=dev
+    ports:
+      - '8381:80'
+    volumes:
+      - './docker/volumes/app/www:/var/www/html:cached'
+      - './.:/var/www/html/src'
+      - './.:/var/www/html/src/vendor/examplevendor/example-app:ro'
+      - './docker/volumes/app/apache2/sites-enabled:/etc/apache2/sites-enabled:cached'
+      - './docker/volumes/app/log:/var/log/honeycomb:delegated'
+    links:
+      - db
+      - memcached
+    restart: always
+
+  #
+  # a simple mariadb
+  #
+  db:
+    image: mariadb:10.3.21
+    volumes:
+      - 'db-data:/var/lib/mysql'
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=database
+    ports:
+      - '3312:3306'
+    restart: always
+
+  #
+  # an optional memcached
+  #
+  memcached:
+    image: 'memcached:alpine'
+    restart: always
+
+volumes:
+  # we're using a named volume to persist DB's data
+  db-data:

@@ -1,0 +1,96 @@
+#
+# Base Dockerfile for a Core Appserver
+# powered by PHP 7.4 and Apache Webserver
+#
+
+# WARNING/TODO: as of 7.3.30 we are on bullseye (!)
+FROM php:7.4.24-apache
+
+# enable apache2 mod_headers
+RUN a2enmod headers
+
+# enable apache2 mod_rewrite
+RUN a2enmod rewrite
+
+# disable exposing Apache and its version in response header
+RUN { \
+    echo 'ServerTokens Prod'; \
+    echo 'ServerSignature Off'; \
+  } | tee -a "$APACHE_CONFDIR/apache2.conf"
+
+# disable exposing PHP version in response header
+RUN echo 'expose_php = Off' | tee "$PHP_INI_DIR/conf.d/prod-php.ini"
+
+
+# get apt-get lists for the first time
+RUN apt-get update
+
+## install zip extension
+## we need zip-1.14 or higher and libzip 1.2 or higher for ZIP encryption support
+RUN apt-get update && apt-get install -y zlib1g-dev libzip-dev \
+    && pecl install zip \
+    # && docker-php-ext-configure zip --with-libzip \ # not required for PHP 7.4+
+    && docker-php-ext-install zip
+
+## configure and install php-intl extension (and dependencies)
+## also needs zlib1g-dev previously installed
+RUN apt-get update && apt-get install -y libicu-dev \
+    && docker-php-ext-install intl
+
+# install some php extensions
+RUN docker-php-ext-install pdo pdo_mysql opcache zip bcmath
+
+#
+# install libmemcached and the php extension
+#
+RUN apt-get update && apt-get install -y \
+    libz-dev \
+    libmemcached-dev \
+    libssl-dev \
+    libcurl4-openssl-dev \
+    curl
+
+RUN pecl install memcached-3.1.5 \
+    && docker-php-ext-enable memcached
+
+RUN yes | pecl install raphf \
+    && docker-php-ext-enable raphf
+
+RUN yes | pecl install propro \
+    && docker-php-ext-enable propro
+
+RUN yes | pecl install pecl_http-3.2.4 \
+    && docker-php-ext-enable http
+
+## install gd extension
+#
+# NOTE: PHP7.4+ instead uses
+# --enable-gd  instead of  --with-gd
+# --with-freetype  instead of  --with-freetype-dir=DIR
+# --with-jpeg  instead of  --with-jpeg-dir=DIR
+# --with-png-dir & --with-zlib-dir  instead of  --with-png-dir=DIR & --with-zlib-dir[=DIR] (both needed!)
+# etc.
+#
+RUN apt-get update && apt-get install -y \
+      libjpeg62-turbo-dev \
+      libpng-dev \
+      libfreetype6-dev \
+    && docker-php-ext-configure gd \
+      # renamed in PHP7.4
+      --enable-gd \
+      --with-jpeg \
+      # --with-png-dir \ # required as of PHP7.4
+      # --with-zlib-dir \ # required as of PHP7.4
+      # renamed in PHP7.4
+      --with-freetype \
+    && docker-php-ext-install -j$(nproc) gd
+
+# install imagemagick
+RUN export CFLAGS="$PHP_CFLAGS" CPPFLAGS="$PHP_CPPFLAGS" LDFLAGS="$PHP_LDFLAGS" \
+    && apt-get update \
+    && apt-get install -y --no-install-recommends \
+        libmagickwand-dev ghostscript \
+    && rm -rf /var/lib/apt/lists/* \
+    # for future PHP8+ support
+    && pecl install imagick-3.5.1 \
+    && docker-php-ext-enable imagick

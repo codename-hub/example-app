@@ -1,0 +1,123 @@
+{
+  "architect_dev" : {
+    "database" : {
+      "default" : {
+        "driver" : "mysql",
+        "host" : "db",
+        "user" : "root",
+        "pass" : "root",
+        "database" : "example",
+        "autoconnect_database" : false,
+        "port" : 3306,
+        "charset" : "utf8"
+      }
+    }
+  },
+  "dev" : {
+    "database" : {
+      "default" : {
+        "driver" : "mysql",
+        "host" : "db",
+        "user" : "app_example",
+        "pass" : "supersecretpassword",
+        "database" : "example",
+        "autoconnect_database" : false,
+        "port" : 3306,
+        "charset" : "utf8"
+      }
+    },
+    "auth": {
+      "default": {
+        "driver" : "universal"
+      },
+      "user": {
+        "driver" : "user"
+      }
+    },
+    "templateengine" : {
+      "default" : {
+        "__comment" : "twig config used for default output",
+        "driver" : "twig"
+      },
+      "twig_default" : {
+        "driver" : "twig",
+        "environment" : {
+          "cache" : false
+        }
+      },
+      "twig_cached" : {
+        "driver" : "twig",
+        "environment" : {
+          "auto_reload" : true,
+          "cache" : "/tmp/twig_cache"
+        }
+      }
+    },
+    "filesystem": {
+      "local": {
+        "driver": "local"
+      }
+    },
+    "translate" : {
+      "default" : {
+        "driver" : "json"
+      }
+    },
+    "cache": {
+      "default": {
+        "driver": "memory"
+      },
+      "--alternative-default": {
+        "driver": "memcached",
+        "host": "memcached",
+        "port": 11211,
+        "log" : null
+      }
+    },
+    "session" : {
+      "default" : {
+        "driver" : "dummy"
+      },
+      "TODO-db-default" : {
+        "driver" : "database"
+      }
+    },
+    "log" : {
+      "errormessage": {
+        "driver": "file",
+        "data": {
+          "name": "example_errormessage",
+          "minlevel" : -3
+        }
+      },
+      "debug": {
+        "driver": "file",
+        "data": {
+          "name": "example_debug",
+          "minlevel" : -2
+        }
+      },
+      "devlog": {
+        "driver": "file",
+        "data": {
+          "name": "example_devlog",
+          "minlevel" : -2
+        }
+      },
+      "access": {
+        "driver": "file",
+        "data": {
+          "name": "example_access",
+          "minlevel" : -5
+        }
+      },
+      "query": {
+        "driver": "file",
+        "data": {
+          "name": "example_query",
+          "minlevel" : 0
+        }
+      }
+    }
+  }
+}

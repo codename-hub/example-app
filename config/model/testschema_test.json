@@ -1,0 +1,18 @@
+{
+  "field" : [
+    "test_id",
+    "test_created",
+    "test_modified",
+    "test_data"
+  ],
+  "primary" : [
+    "test_id"
+  ],
+  "datatype": {
+    "test_id": "number_natural",
+    "test_created": "text_timestamp",
+    "test_modified": "text_timestamp",
+    "test_data": "text"
+  },
+  "connection": "default"
+}

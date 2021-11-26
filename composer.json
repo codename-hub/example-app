@@ -1,0 +1,17 @@
+{
+  "name": "examplevendor/example-app",
+  "type": "project",
+  "require": {
+    "codename/core": "^1.5 || @dev",
+    "codename/core-ui": "^1.0 || @dev",
+    "codename/rest": "^1.0 || @dev"
+  },
+  "require-dev": {
+    "codename/architect": "^1.0 || @dev"
+  },
+  "autoload": {
+    "psr-4": {
+      "examplevendor\\example\\": "backend/class/"
+    }
+  }
+}

@@ -1,0 +1,10 @@
+#example
+php_value  	memory_limit  256M
+php_value	upload_max_filesize		5M
+php_value 	post_max_size			5M
+
+RewriteEngine On
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME} !-l
+RewriteRule .* index.php
