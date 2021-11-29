@@ -1,0 +1,25 @@
+{% if response.getData('recent_formdata') %}
+You recently submitted this dataset:
+<pre>
+{{ response.getData('recent_formdata') | json_encode(constant('JSON_PRETTY_PRINT')) }}
+</pre>
+
+If you'd normalize the formdata, it would look like this:
+<pre>
+{{ response.getData('recent_formdata_normalized') | json_encode(constant('JSON_PRETTY_PRINT')) }}
+</pre>
+
+
+The formdata provided was <strong>{{ response.getData('recent_formdata_valid') ? 'valid' : 'not valid' }}</strong>.
+
+{% if not response.getData('recent_formdata_valid') %}
+<br>
+Form validation failed with these messages:
+<pre>
+{{ response.getData('recent_formdata_errors') | json_encode(constant('JSON_PRETTY_PRINT')) }}
+</pre>
+{% endif %}
+
+{% endif %}
+
+{{ response.getData('form') | raw }}

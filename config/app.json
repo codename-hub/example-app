@@ -14,7 +14,8 @@
       "defaultview" : "default",
       "view" : {
         "default" : { "public" : true },
-        "create" : { "public" : true }
+        "create" : { "public" : true },
+        "exampleform" : { "public" : true }
       }
     }
   }
